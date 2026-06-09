@@ -1,9 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/shotwot/AppShell";
 import { Sparkles, Download, Save, RefreshCw, ChevronDown, Search } from "lucide-react";
 
 export const Route = createFileRoute("/new")({ component: NewGen });
+
+const loadingMessages = [
+  "Reading your brief…",
+  "Pulling assets from your Vault…",
+  "Mixing in a little saffron magic…",
+  "Composing the frame…",
+  "Almost there — ShotWot's perfecting the light…",
+];
 
 const formats = [
   { l: "LinkedIn Post", r: "1:1", ratio: "aspect-square" },
