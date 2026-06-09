@@ -120,7 +120,7 @@ function NewGen() {
                 className="w-full h-14 rounded-xl bg-saffron text-white font-display font-bold text-base inline-flex items-center justify-center gap-2 hover:brightness-105 shadow-lg disabled:opacity-60">
                 <Sparkles className="h-5 w-5" /> {phase === "loading" ? "ShotWot is cooking…" : "Generate with ShotWot"}
               </button>
-              <p className="mt-2 text-xs text-muted-foreground text-center">This will use 1 of your 10 free generations.</p>
+              <p className="mt-2 text-xs text-muted-foreground text-center">Uses 1 of your 10 free generations this month.</p>
             </div>
           </div>
 
