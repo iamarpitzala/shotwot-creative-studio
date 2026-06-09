@@ -10,7 +10,7 @@ function Dashboard() {
       <div className="max-w-6xl mx-auto space-y-8">
         <div>
           <h1 className="font-display text-3xl font-extrabold text-navy">Namaste, Arjun 👋</h1>
-          <p className="text-muted-foreground mt-1">Here's what ShotWot's been up to.</p>
+          <p className="text-muted-foreground mt-1">Here's what ShotWot's been cooking up for you.</p>
         </div>
 
         <Checklist />
