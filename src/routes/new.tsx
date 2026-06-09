@@ -1,9 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/shotwot/AppShell";
 import { Sparkles, Download, Save, RefreshCw, ChevronDown, Search } from "lucide-react";
 
 export const Route = createFileRoute("/new")({ component: NewGen });
+
+const loadingMessages = [
+  "Reading your brief…",
+  "Pulling assets from your Vault…",
+  "Mixing in a little saffron magic…",
+  "Composing the frame…",
+  "Almost there — ShotWot's perfecting the light…",
+];
 
 const formats = [
   { l: "LinkedIn Post", r: "1:1", ratio: "aspect-square" },
@@ -20,10 +28,18 @@ function NewGen() {
   const [brief, setBrief] = useState("");
   const [phase, setPhase] = useState<"idle" | "loading" | "done">("idle");
   const [open, setOpen] = useState(false);
+  const [msgIdx, setMsgIdx] = useState(0);
+
+  useEffect(() => {
+    if (phase !== "loading") return;
+    setMsgIdx(0);
+    const id = setInterval(() => setMsgIdx((i) => (i + 1) % loadingMessages.length), 900);
+    return () => clearInterval(id);
+  }, [phase]);
 
   const generate = () => {
     setPhase("loading");
-    setTimeout(() => setPhase("done"), 2500);
+    setTimeout(() => setPhase("done"), 4200);
   };
 
   return (
@@ -104,7 +120,7 @@ function NewGen() {
                 className="w-full h-14 rounded-xl bg-saffron text-white font-display font-bold text-base inline-flex items-center justify-center gap-2 hover:brightness-105 shadow-lg disabled:opacity-60">
                 <Sparkles className="h-5 w-5" /> {phase === "loading" ? "ShotWot is cooking…" : "Generate with ShotWot"}
               </button>
-              <p className="mt-2 text-xs text-muted-foreground text-center">This will use 1 of your 10 free generations.</p>
+              <p className="mt-2 text-xs text-muted-foreground text-center">Uses 1 of your 10 free generations this month.</p>
             </div>
           </div>
 
@@ -122,10 +138,21 @@ function NewGen() {
                 </div>
               )}
               {phase === "loading" && (
-                <div className="absolute inset-0 bg-gradient-to-r from-surface-muted via-saffron/20 to-surface-muted bg-[length:200%_100%] animate-[shimmer_1.6s_linear_infinite] grid place-items-center">
-                  <div className="text-center">
-                    <Sparkles className="h-8 w-8 text-saffron mx-auto animate-pulse" />
-                    <p className="mt-3 font-display font-bold text-navy">ShotWot is generating your creative…</p>
+                <div className="absolute inset-0 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-navy/10 via-saffron/15 to-navy/10" />
+                  <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_30%,oklch(1_0_0/0.6)_50%,transparent_70%)] bg-[length:200%_100%] animate-[shimmer_1.8s_ease-in-out_infinite]" />
+                  <div className="absolute inset-x-8 top-1/2 -translate-y-[120%] space-y-2.5">
+                    <div className="h-2.5 w-1/3 rounded-full bg-navy/10" />
+                    <div className="h-2.5 w-3/4 rounded-full bg-navy/10" />
+                    <div className="h-2.5 w-1/2 rounded-full bg-navy/10" />
+                  </div>
+                  <div className="absolute inset-x-0 bottom-8 grid place-items-center">
+                    <div className="flex items-center gap-2 bg-white/95 backdrop-blur px-4 py-2.5 rounded-full shotwot-shadow">
+                      <Sparkles className="h-4 w-4 text-saffron animate-pulse" />
+                      <p key={msgIdx} className="text-sm font-semibold text-navy animate-[fade-in_0.4s_ease-out]">
+                        {loadingMessages[msgIdx]}
+                      </p>
+                    </div>
                   </div>
                 </div>
               )}
