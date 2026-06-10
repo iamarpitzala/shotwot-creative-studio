@@ -70,7 +70,7 @@ function Library() {
           <div>
             <div className="grid grid-cols-3 gap-4">
               {tiles.map((t, i) => (
-                <button key={i} onClick={() => setPreview(i)} className="group relative aspect-[4/3] rounded-xl overflow-hidden">
+                <button key={i} onClick={() => openPreview(i)} className="group relative aspect-[4/3] rounded-xl overflow-hidden">
                   <div className={`absolute inset-0 bg-gradient-to-br ${t.hue}`} />
                   <span className="absolute bottom-2 left-2 text-[10px] font-bold uppercase tracking-wider bg-white/90 px-2 py-1 rounded text-navy">{t.mood}</span>
                   <div className="absolute inset-0 bg-navy/0 group-hover:bg-navy/50 transition grid place-items-center gap-2 opacity-0 group-hover:opacity-100">
@@ -91,7 +91,7 @@ function Library() {
         </div>
       </div>
 
-      {preview !== null && <PreviewModal tile={tiles[preview]} onClose={() => setPreview(null)} />}
+      {preview !== null && <PreviewModal tile={tiles[preview]} onClose={closePreview} exiting={exiting} />}
     </AppShell>
   );
 }

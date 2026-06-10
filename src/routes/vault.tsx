@@ -41,7 +41,7 @@ function Vault() {
             </h1>
             <p className="mt-1 text-muted-foreground">Your private asset library — never used for AI training.</p>
           </div>
-          <button onClick={() => setShowUpload(true)} className="inline-flex h-11 items-center gap-2 rounded-lg bg-saffron px-5 text-sm font-semibold text-white hover:brightness-105">
+          <button onClick={openUpload} className="inline-flex h-11 items-center gap-2 rounded-lg bg-saffron px-5 text-sm font-semibold text-white hover:brightness-105">
             <Upload className="h-4 w-4" /> Upload Assets
           </button>
         </div>
@@ -72,7 +72,7 @@ function Vault() {
             </div>
           ))}
           {Array.from({ length: Math.max(0, 4 - filtered.length) }).map((_, i) => (
-            <button key={i} onClick={() => setShowUpload(true)}
+            <button key={i} onClick={openUpload}
               className="aspect-square rounded-xl border-2 border-dashed border-border grid place-items-center text-muted-foreground hover:border-saffron hover:text-saffron hover:bg-saffron/5 transition">
               <div className="text-center px-4">
                 <ImagePlus className="h-6 w-6 mx-auto" />
@@ -84,7 +84,7 @@ function Vault() {
         </div>
       </div>
 
-      {showUpload && <UploadModal onClose={() => setShowUpload(false)} />}
+      {showUpload && <UploadModal onClose={closeUpload} exiting={uploadExiting} />}
     </AppShell>
   );
 }
