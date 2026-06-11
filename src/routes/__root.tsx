@@ -7,8 +7,11 @@ import {
   useRouterState,
   HeadContent,
   Scripts,
+  useNavigate,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { onAuthStateChanged, type User } from "firebase/auth";
+import { auth } from "../lib/firebase";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -119,12 +122,48 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const [authChecked, setAuthChecked] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  // Public routes that don't require authentication
+  const publicRoutes = ["/", "/signin", "/signup"];
+  const isPublicRoute = publicRoutes.includes(pathname);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setAuthChecked(true);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!authChecked) return;
+    if (!currentUser && !isPublicRoute) {
+      navigate({ to: "/signin" });
+    }
+  }, [authChecked, currentUser, isPublicRoute, navigate]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [pathname]);
+
+  // Wait for Firebase to resolve auth state before rendering protected pages
+  if (!authChecked && !isPublicRoute) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <div className="min-h-screen grid place-items-center bg-surface-muted">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-navy animate-pulse" />
+            <p className="text-sm text-muted-foreground font-medium">Loading ShotWot…</p>
+          </div>
+        </div>
+      </QueryClientProvider>
+    );
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

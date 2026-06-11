@@ -1,6 +1,9 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, FolderLock, Library, Sparkles, Settings, Bell, Search, ChevronRight } from "lucide-react";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { LayoutDashboard, FolderLock, Library, Sparkles, Settings, Bell, Search, ChevronRight, LogOut } from "lucide-react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { onAuthStateChanged, signOut, type User } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { Logo } from "./Logo";
 
 const navItems = [
@@ -13,6 +16,30 @@ const navItems = [
 
 export function AppShell({ children, breadcrumb }: { children: ReactNode; breadcrumb: string[] }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (u) => setUser(u));
+    return () => unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    navigate({ to: "/signin" });
+  };
+
+  // Derive initials and display name from email
+  const email = user?.email ?? "";
+  const namePart = email.split("@")[0];
+  const displayName = namePart.replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  const initials = displayName
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase() || "?";
+
   return (
     <div className="min-h-screen flex bg-surface-muted">
       <aside className="w-[220px] shrink-0 bg-white border-r border-border flex flex-col sticky top-0 h-screen">
@@ -39,14 +66,20 @@ export function AppShell({ children, breadcrumb }: { children: ReactNode; breadc
         </nav>
         <div className="p-3 border-t border-border">
           <div className="flex items-center gap-3 p-2 rounded-lg">
-            <div className="h-9 w-9 rounded-full bg-saffron/20 text-saffron flex items-center justify-center font-semibold text-sm">
-              AR
+            <div className="h-9 w-9 rounded-full bg-saffron/20 text-saffron flex items-center justify-center font-semibold text-sm shrink-0">
+              {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-navy truncate">Arjun R.</p>
-              <p className="text-xs text-muted-foreground truncate">Free tier</p>
+              <p className="text-sm font-semibold text-navy truncate">{displayName || "Account"}</p>
+              <p className="text-xs text-muted-foreground truncate">{email}</p>
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-saffron bg-saffron/10 px-2 py-1 rounded">Upgrade</span>
+            <button
+              onClick={handleSignOut}
+              title="Sign out"
+              className="h-7 w-7 grid place-items-center rounded hover:bg-red-50 text-muted-foreground hover:text-red-500 transition"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
       </aside>
@@ -71,7 +104,9 @@ export function AppShell({ children, breadcrumb }: { children: ReactNode; breadc
           <button className="h-10 w-10 grid place-items-center rounded-lg hover:bg-surface-muted text-navy/70">
             <Bell className="h-4 w-4" />
           </button>
-          <div className="h-9 w-9 rounded-full bg-navy text-white grid place-items-center text-sm font-semibold">AR</div>
+          <div className="h-9 w-9 rounded-full bg-navy text-white grid place-items-center text-sm font-semibold">
+            {initials}
+          </div>
         </header>
         <main className="flex-1 p-8">{children}</main>
       </div>

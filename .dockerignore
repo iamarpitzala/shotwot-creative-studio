@@ -1,0 +1,14 @@
+node_modules/
+.output/
+dist/
+.git/
+.gitignore
+*.md
+.env
+.env.local
+.env.*.local
+.vscode/
+.idea/
+public_placeholder/
+firebase.json
+.firebaserc
